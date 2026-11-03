@@ -105,7 +105,6 @@ names_equal :: (a: Name, b: Name) -> bool {
 
 #scope_file
 #import "Basic";
-#import "MyBasic";
 #import "Hash";
 #import "Hash_Table";
 #import "Thread";
@@ -124,6 +123,26 @@ Name_Storage :: struct {
 }
 
 name_storage: Name_Storage;
+
+try_copy_string :: (source: string) -> string, bool {
+    if source.count < 0 || (source.count > 0 && source.data == null) {
+        return "", false;
+    }
+
+    if source.count == 0 {
+        return "", true;
+    }
+
+    result: string;
+    result.data = cast(*u8)alloc(source.count);
+    if result.data == null {
+        return "", false;
+    }
+
+    result.count = source.count;
+    memcpy(result.data, source.data, source.count);
+    return result, true;
+}
 
 try_grow_name_table :: () -> bool {
     table := *name_storage.by_text;
